@@ -1,0 +1,13 @@
+{% set ip_address = ansible_host | default(inventory_hostname) -%}
+{% set all_es = [] -%}
+{% set es_hosts = groups.es_servers -%}
+{% for host in es_hosts -%}
+  {% set es_ip = hostvars[host].ansible_host | default(hostvars[host].inventory_hostname) -%}
+  {% set es_port = hostvars[host]["es_port"] | default(9200) -%}
+  {% set _ = all_es.append("http://%s:%s" % (es_ip, es_port)) -%}
+{% endfor -%}
+
+server.port: {{ kibana_port }}
+server.host: "{{ ip_address }}"
+elasticsearch.hosts: {{ all_es }} 
+i18n.locale: "zh-CN"

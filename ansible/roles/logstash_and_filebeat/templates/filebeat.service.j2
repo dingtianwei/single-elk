@@ -1,0 +1,15 @@
+[Unit]
+Description=filebeat
+
+[Service]
+Type=simple
+User=root
+Group=root
+
+WorkingDirectory={{install_path}}/filebeat
+ExecStart={{install_path}}/filebeat/filebeat run -c {{install_path}}/filebeat/filebeat.yml 
+Restart=always
+
+
+[Install]
+WantedBy=multi-user.target

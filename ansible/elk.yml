@@ -1,0 +1,36 @@
+---
+- name: deploy es 
+  hosts: es_servers
+  remote_user: vagrant
+  become: yes
+  become_user: root
+  become_method: sudo
+  gather_facts: False
+
+  roles:
+    - elasticsearch
+
+- name: deploy kibana 
+  hosts: kibana_servers
+  remote_user: vagrant
+  become: yes
+  become_user: root
+  become_method: sudo
+  gather_facts: False
+ 
+  roles:
+    - kibana
+
+- name: deploy logstash and kibana 
+  hosts: logstash_servers
+  remote_user: vagrant
+  become: yes
+  become_user: root
+  become_method: sudo
+  gather_facts: False
+
+  roles:
+    - logstash_and_filebeat
+
+
+

@@ -1,0 +1,37 @@
+---
+- name: create group
+  group: name=kibana
+
+- name: create account
+  user: name=kibana group=kibana shell=/sbin/nologin 
+
+
+- name: deploy kibana
+  unarchive: 
+    creates: "{{ install_path }}/{{ packages.kibana.name }}"
+    src: "{{ packages_dir }}/{{packages.kibana.package}}"
+    dest: "{{ install_path }}"
+    owner: "kibana"
+    group: "kibana"
+
+- name: symlink install directory
+  file: 
+    src: "{{ install_path }}/{{ packages.kibana.name }}"
+    dest: "{{ install_path }}/kibana"
+    state: link
+    owner: "kibana"
+    group: "kibana"
+
+
+- name: config kibana
+  template:
+    src: "kibana.yml.j2"
+    dest: "{{ install_path }}/kibana/config/kibana.yml"
+  notify: restart kibana
+  tags: config_kibana
+
+- name: create systemd
+  template:
+    src: "kibana.service.j2"
+    dest: "/lib/systemd/system/kibana.service"
+  notify: reload systemd

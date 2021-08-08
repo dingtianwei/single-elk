@@ -1,0 +1,16 @@
+- name: reload systemd
+  shell: systemctl daemon-reload
+  notify: enalbed service
+
+- name: enalbed service
+  service: 
+    name: "elasticsearch"
+    enabled: true
+  notify: restart es
+  when: is_es_enabled == 1 
+
+- name: restart es
+  service:
+    name: "elasticsearch"
+    state: restarted
+  when: is_es_enabled == 1 

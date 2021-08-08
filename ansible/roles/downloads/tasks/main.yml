@@ -1,0 +1,21 @@
+---
+- name: create packages dir
+  file: 
+    path: "{{ packages_dir }}"
+    state: directory
+# 判断文件是否存在
+- name: check packages exists
+  stat: 
+    path: "{{ packages_dir }}/{{ item.package }}"
+  register: res
+  with_items:
+    "{{ packages.values() }}"
+
+- name: download packages
+  get_url: 
+    url: "{{ item.item.url }}"
+    dest: "{{ packages_dir }}/{{ item.item.package }}"
+    force: yes
+  when:  item.stat.exists ==  False
+  with_items:
+    "{{ res.results }}"

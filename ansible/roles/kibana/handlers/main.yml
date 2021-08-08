@@ -1,0 +1,16 @@
+- name: reload systemd
+  shell: systemctl daemon-reload
+  notify: enabled kibana 
+
+- name: enabled kibana
+  service:
+    name: "kibana"
+    enabled: true
+  when: is_kibana_enabled
+  notify: restart kibana
+
+- name: restart kibana
+  service:
+    name: "kibana"
+    state: restarted
+  when: is_kibana_enabled

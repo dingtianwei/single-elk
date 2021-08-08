@@ -1,0 +1,51 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+  vars:
+  - timezone: "Asia/Shanghai"
+    set_timezone: True
+
+  tasks:
+  - name: deliver authorized_keys
+    authorized_key:
+      user: vagrant
+      key: "{{ lookup('file','~/.ssh/id_rsa.pub') }}"
+      state: present
+  - name: set timezone to {{ timezone }}
+    timezone: name={{ timezone }}
+    when: set_timezone
+  - name: update apt cache
+    apt: update_cache=yes
+  - name: install packages
+    apt: 
+      name: ['ntpdate', 'git', 'vim', 'curl', 'wget', 'jq', 'psmisc', 'net-tools', 'telnet',  'lvm2'] 
+      state: present
+  - name: update /etc/vim/vimrc
+    blockinfile:
+      dest: /etc/vim/vimrc
+      marker: "\"{mark} ANSIBLE MANAGED BLOCK"
+      block: |
+        set nocompatible
+        set history=50
+        set fenc=utf-8
+        set ruler
+        set number
+        set backspace=indent,eol,start
+        set autoindent 
+        set smartindent
+        set cindent
+        set tabstop=4
+        set softtabstop=4
+        set shiftwidth=4
+        set expandtab
+        set smarttab
+        set showmatch
+        set matchtime=5
+        set hlsearch
+        set incsearch
+        set mouse=v
+        set cursorline  
+        filetype on
+        syntax on
+

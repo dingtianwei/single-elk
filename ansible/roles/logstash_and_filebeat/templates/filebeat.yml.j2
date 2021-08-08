@@ -1,0 +1,15 @@
+{% set all_logstash = [] -%}
+{% set logstash_hosts = groups.logstash_servers -%}
+{% for host in logstash_hosts -%}
+  {% set logstash_ip = hostvars[host].ansible_host | default(hostvars[host].inventory_hostname) -%}
+  {% set logstash_port = hostvars[host]["logstash_port"] | default(5504) -%}
+  {% set _ = all_logstash.append("%s:%s" % (logstash_ip, logstash_port)) -%}
+{% endfor -%}
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/syslog
+    - /var/log/auth.log
+output.logstash:
+   hosts:  {{ all_logstash }}

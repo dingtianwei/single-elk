@@ -1,0 +1,51 @@
+---
+- debug: var=vars
+
+- name: deploy logstash and filebeat
+  unarchive: 
+    creates: "{{ install_path }}/{{ packages.get(item).name }}"
+    src: "{{ packages_dir }}/{{ packages.get(item).package }}"
+    dest: "{{ install_path }}"
+  with_items:
+    - "logstash"
+    - "filebeat"
+
+
+- name: symlink install directory
+  file: 
+    src: "{{ install_path }}/{{ packages.get(item).name }}"
+    dest: "{{ install_path }}/{{item}}"
+    state: link
+  with_items:
+    - "logstash"
+    - "filebeat"
+
+
+- name: config logstash
+  template:
+    src: "logstash.conf.j2"
+    dest: "{{ install_path }}/logstash/config/logstash.conf"
+  notify: restart logstash
+  tags: config_logstash
+
+- name: config logstash heap
+  template:
+    src: "jvm.options.j2"
+    dest: "{{ install_path }}/logstash/config/jvm.options"
+  notify: restart logstash
+  tags: config_logstash_jvm
+- name: config filebeat
+  template:
+    src: "filebeat.yml.j2"
+    dest: "{{ install_path }}/filebeat/filebeat.yml"
+  notify: restart filebeat
+  tags: config_filebeat
+
+- name: create systemd
+  template:
+    src: "{{item}}.service.j2"
+    dest: "/lib/systemd/system/{{item}}.service"
+  notify: reload systemd
+  with_items:
+    - "logstash"
+    - "filebeat"

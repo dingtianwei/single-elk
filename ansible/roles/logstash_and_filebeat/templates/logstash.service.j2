@@ -1,0 +1,16 @@
+[Unit]
+Description=Logstash
+StartLimitIntervalSec=30
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=root
+Group=root
+
+ExecStart={{ install_path }}/logstash/bin/logstash -f {{ install_path }}/logstash/config/logstash.conf
+Restart=always
+WorkingDirectory={{ install_path }}
+
+[Install]
+WantedBy=multi-user.target

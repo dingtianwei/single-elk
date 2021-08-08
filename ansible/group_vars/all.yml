@@ -1,0 +1,32 @@
+---
+# local 
+packages_dir: "{{ playbook_dir }}/packages"
+
+# tar tvf logstash-7.12.1-darwin-x86_64.tar.gz |grep ^d | awk -F '/'  '{if(NF<4) print }'
+
+# packages info
+packages:
+  elasticsearch:
+    name: elasticsearch-7.12.1
+    package: elasticsearch-7.12.1-linux-x86_64.tar.gz
+    version: 7.12.1
+    url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.12.1-linux-x86_64.tar.gz
+
+  kibana: 
+    name: kibana-7.12.1-linux-x86_64
+    package: kibana-7.12.1-linux-x86_64.tar.gz
+    version: 7.12.1
+    url: https://artifacts.elastic.co/downloads/kibana/kibana-7.12.1-linux-x86_64.tar.gz
+
+
+  logstash: 
+    name: logstash-7.12.1
+    package: logstash-7.12.1-linux-x86_64.tar.gz
+    version: 7.12.1
+    url: https://artifacts.elastic.co/downloads/logstash/logstash-7.12.1-linux-x86_64.tar.gz
+
+  filebeat:
+    name:  filebeat-7.12.1-linux-x86_64
+    package: filebeat-7.12.1-linux-x86_64.tar.gz
+    version: 7.12.1
+    url: https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.12.1-linux-x86_64.tar.gz

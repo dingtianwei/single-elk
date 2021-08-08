@@ -1,0 +1,70 @@
+---
+- debug: var=vars
+- name: create group
+  group: name=elasticsearch
+
+- name: create account
+  user: name=elasticsearch group=elasticsearch shell=/sbin/nologin 
+
+- name: setting present kernel params
+  sysctl: name="{{ item.name }}" value="{{ item.value }}" state=present
+  with_items:
+    - { name: 'fs.nr_open', value: 167772166 }
+    - { name: 'vm.max_map_count', value: 262144 }
+
+  
+- name: update /etc/security/limits.conf
+  blockinfile:
+    dest: /etc/security/limits.conf
+    insertbefore: '# End of file'
+    block: |
+      root soft nofile 524288
+      root hard nofile 524288
+      root soft nproc 32768
+      root hard nproc 32768
+      root soft memlock unlimited
+      root hard memlock unlimited
+      elasticsearch soft nofile 524288
+      elasticsearch hard nofile 524288
+      elasticsearch soft nproc 32768
+      elasticsearch hard nproc 32768
+      elasticsearch soft memlock unlimited
+      elasticsearch hard memlock unlimited
+  with_items:
+      - "root"
+      - "elasticsearch"
+- name: deploy elasticsearch
+  unarchive: 
+    creates: "{{ install_path }}/{{ packages.elasticsearch.name }}"
+    src: "{{ packages_dir }}/{{packages.elasticsearch.package}}"
+    dest: "{{ install_path }}"
+    owner: "elasticsearch"
+    group: "elasticsearch"
+
+- name: symlink install directory
+  file: 
+    src: "{{ install_path }}/{{ packages.elasticsearch.name }}"
+    dest: "{{ install_path }}/elasticsearch"
+    state: link
+    owner: "elasticsearch"
+    group: "elasticsearch"
+
+- name: config jvm heap.options
+  template:
+    src: "heap.options.j2"
+    dest: "{{ install_path }}/elasticsearch/config/jvm.options.d/heap.options"
+  notify: restart es
+  tags: config_jvm
+
+- name: config es
+  template:
+    src: "elasticsearch.yml.j2"
+    dest: "{{ install_path }}/elasticsearch/config/elasticsearch.yml"
+  notify: restart es
+  tags: config_es
+
+- name: create systemd
+  template:
+    src: "elasticsearch.service.j2"
+    dest: "/lib/systemd/system/elasticsearch.service"
+  notify: reload systemd

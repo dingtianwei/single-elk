@@ -10,7 +10,7 @@ Group=root
 
 ExecStart={{ install_path }}/logstash/bin/logstash -f {{ install_path }}/logstash/config/logstash.conf
 Restart=always
-WorkingDirectory={{ install_path }}
+WorkingDirectory={{ install_path }}/logstash
 
 [Install]
 WantedBy=multi-user.target

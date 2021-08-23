@@ -45,7 +45,7 @@
   template:
     src: "{{item}}.service.j2"
     dest: "/lib/systemd/system/{{item}}.service"
-  notify: reload systemd
+  notify: enabled {{item}} 
   with_items:
     - "logstash"
     - "filebeat"

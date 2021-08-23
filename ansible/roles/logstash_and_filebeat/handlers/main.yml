@@ -1,21 +1,18 @@
-- name: reload systemd
-  shell: systemctl daemon-reload
-  notify: 
-    - enabled logstash
-    - enabled filebeat
-
 - name: enabled logstash
   service:
     name: "logstash"
     enabled: true
-  notify: restart logstash
+    daemon_reload: True
+    state: restarted
   when: is_logstash_enabled == 1
+
 
 - name: enabled filebeat
   service:
     name: "filebeat"
     enabled: true
-  notify: restart filebeat
+    daemon_reload: True
+    state: restarted
   when: is_filebeat_enabled == 1
 
 - name: restart logstash

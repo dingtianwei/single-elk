@@ -1,0 +1,38 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /logs/*.log
+  exclude_files: ['nacos.*.log']
+  exclude_lines: ['/api/health', '/api/ping']
+  multiline:
+    pattern: (^\|[0-9]{4}-[0-9]{2}-[0-9]{2} |^[0-9]{2}\:[0-9]{2}\:[0-9]{2}\.[0-9]+ [A-Z]+|^\|TID)
+    negate: true
+    match: after
+  scan_frequency: 1s
+  ignore_older: 24h
+  close_inactive: 3h
+  close_removed: true
+  clean_inactive: 48h
+  clean_removed: true
+
+  processors:
+  - add_fields:
+      fields:
+        env_name: dev
+
+output.logstash:
+  hosts: 10.0.3.41:5044 
+
+logging.level: warning
+
+name: "elk_demo"
+processors:
+  - drop_fields:
+      fields: ["host","ecs"]
+  - add_fields:
+      target: agent
+      fields:
+        server_ip: "192.168.1.2"
+        global_ip: "202.106.0.20"
+

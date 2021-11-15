@@ -1,0 +1,10 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /logs/*.log
+output.console:
+  pretty: false 
+
+logging.level: warning
+

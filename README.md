@@ -1,7 +1,9 @@
 # 说明
 单节点部署ELK快速体验
 
-虚拟机使用vagrant，部署使用ansible。
+基础环境，使用vagrant管理virtualbox虚拟机
+
+部署脚本使用ansible。
 
 vagrant目录下存放vagrant脚本。
 
